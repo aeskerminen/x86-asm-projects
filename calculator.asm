@@ -24,8 +24,10 @@ section .text
 
     mov eax, [esp + 8] ; load argv 
     mov ebx, [eax + 1 * 4] ; 1st arg
-    mov esi, [eax + 3 * 4] ; 2nd arg
-    mov edi, [eax + 2 * 4] ; 3rd arg
+    mov esi, [eax + 3 * 4] ; 3rd arg
+    mov edi, [eax + 2 * 4] ; 2nd arg
+
+    ; EBX and ESI contain the numbers
 
     ; print calculation
     
@@ -61,6 +63,8 @@ section .text
     jz sub_branch
     cmp al, '*'
     jz mul_branch
+    cmp al, '/'
+    jz div_branch
 
     ; Push error string
 
@@ -82,6 +86,13 @@ section .text
     mul_branch:
     mov eax, ebx
     mul esi
+    mov ebx, eax
+    jmp print_res
+
+    div_branch:
+    mov edx, 0x0
+    mov eax, ebx
+    div esi
     mov ebx, eax
     jmp print_res
 
