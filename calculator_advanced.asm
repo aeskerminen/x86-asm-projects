@@ -20,9 +20,9 @@ section .text
     mov eax, [ebp + 12]
     mov ecx, [ebp + 8]
 
-    pop ebp
-
     add eax, ecx
+
+    pop ebp
     ret
     
     sub_two:
@@ -32,9 +32,9 @@ section .text
     mov eax, [ebp + 12]
     mov ecx, [ebp + 8]
 
-    pop ebp
-
     sub eax, ecx
+
+    pop ebp
     ret
     
     mul_two:
@@ -44,9 +44,9 @@ section .text
     mov eax, [ebp + 12]
     mov ecx, [ebp + 8]
 
-    pop ebp
-
     mul ecx
+
+    pop ebp
     ret
     
     div_two:
@@ -54,11 +54,12 @@ section .text
     mov ebp, esp
 
     mov eax, [ebp + 12]
+    cdq
     mov ecx, [ebp + 8]
 
-    pop ebp
+    idiv ecx
 
-    div ecx
+    pop ebp
     ret
 
     _main:
@@ -115,7 +116,6 @@ section .text
     add esp, 0x8
     mov ebx, eax
     mov eax, [esp]
-
     jmp print_res
 
     sub_cmp:
