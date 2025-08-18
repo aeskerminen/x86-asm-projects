@@ -121,6 +121,7 @@ section .text
     sub_cmp:
     cmp al, '-'
     jnz mul_cmp
+    push eax
     push ebx
     push esi
     call sub_two
@@ -131,7 +132,8 @@ section .text
 
     mul_cmp:
     cmp al, '*'
-    jnz div_cmp
+    jnz div_cmp    
+    push eax
     push ebx
     push esi
     call mul_two
@@ -143,6 +145,7 @@ section .text
     div_cmp:
     cmp al, '/'
     jnz error
+    push eax
     push ebx
     push esi
     call div_two
