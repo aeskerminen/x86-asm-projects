@@ -2,6 +2,7 @@ global _main
 
 extern _printf
 extern _atoi
+extern MessageBoxA
 
 section .bss
 
@@ -12,6 +13,54 @@ section .data
     errorString: db "Bad operator", 0xB, 0
 
 section .text
+    add_two:
+    push ebp
+    mov ebp, esp
+
+    mov eax, [ebp + 12]
+    mov ecx, [ebp + 8]
+
+    pop ebp
+
+    add eax, ecx
+    ret
+    
+    sub_two:
+    push ebp
+    mov ebp, esp
+
+    mov eax, [ebp + 12]
+    mov ecx, [ebp + 8]
+
+    pop ebp
+
+    sub eax, ecx
+    ret
+    
+    mul_two:
+    push ebp
+    mov ebp, esp
+
+    mov eax, [ebp + 12]
+    mov ecx, [ebp + 8]
+
+    pop ebp
+
+    mul ecx
+    ret
+    
+    div_two:
+    push ebp
+    mov ebp, esp
+
+    mov eax, [ebp + 12]
+    mov ecx, [ebp + 8]
+
+    pop ebp
+
+    div ecx
+    ret
+
     _main:
     
     ; Print welcome string
@@ -58,43 +107,57 @@ section .text
     ; check operator
 
     cmp al, '+'
-    jz add_branch
+    jnz sub_cmp
+    push eax
+    push ebx
+    push esi
+    call add_two
+    add esp, 0x8
+    mov ebx, eax
+    mov eax, [esp]
+
+    jmp print_res
+
+    sub_cmp:
     cmp al, '-'
-    jz sub_branch
+    jnz mul_cmp
+    push ebx
+    push esi
+    call sub_two
+    add esp, 0x8
+    mov ebx, eax
+    mov eax, [esp]
+    jmp print_res
+
+    mul_cmp:
     cmp al, '*'
-    jz mul_branch
+    jnz div_cmp
+    push ebx
+    push esi
+    call mul_two
+    add esp, 0x8
+    mov ebx, eax
+    mov eax, [esp]
+    jmp print_res
+
+    div_cmp:
     cmp al, '/'
-    jz div_branch
+    jnz error
+    push ebx
+    push esi
+    call div_two
+    add esp, 0x8
+    mov ebx, eax
+    mov eax, [esp]
+    jmp print_res
 
     ; Push error string
 
+    error:
     push errorString
     call _printf
 
     ret
-
-    ; Branches for the actual operation
-
-    add_branch:
-    add ebx, esi
-    jmp print_res
-
-    sub_branch:
-    sub ebx, esi
-    jmp print_res
-
-    mul_branch:
-    mov eax, ebx
-    mul esi
-    mov ebx, eax
-    jmp print_res
-
-    div_branch:
-    mov edx, 0x0
-    mov eax, ebx
-    div esi
-    mov ebx, eax
-    jmp print_res
 
     print_res:
     ; Print the result
