@@ -62,8 +62,10 @@ section .text
     ; lpNumberOfBytesWritten
     push bytesWritten
 
-    ; nNumberOfBytesToWrite
-    push fileContentLen
+    ; nNumberOfBytesToWrite (decrement because we don't need null terminator)
+    mov eax, fileContentLen
+    dec eax
+    push eax
 
     ; LpBuffer
     push fileContent
