@@ -11,8 +11,10 @@ section .data
     fileName: db "test.txt", 0
 
 section .text
-    _main:
-
+    _createTestFile:
+    push ebp
+    mov ebp, esp
+    
     ; dwFlagsAndAttributes
     mov eax, 0x80
     push eax
@@ -37,5 +39,16 @@ section .text
     push fileName    
 
     call _CreateFileA@28
+
+    pop ebp
+    ret
+
+    _main:
    
+    call _createTestFile
+
+    ; close unused handle to the file
+    push eax
+    call _CloseHandle@4 ;
+
     ret
