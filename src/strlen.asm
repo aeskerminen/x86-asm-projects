@@ -9,36 +9,47 @@ section .data
 
 section .text
     strlen:
-    push ebp
-    mov ebp, esp
+        push ebp
+        mov ebp, esp
 
-    mov ebx, [esp + 8]
+        push ebx
+        push ecx
+        push edx
 
-    ; len
-    mov ecx, 0
-    ; index
-    mov esi, 0
+        mov ebx, [ebp + 8]
 
-    loop:
-    ; check for null terminator
-    cmp byte [ebx + esi], 0x00
-    jz end
+        ; len
+        mov ecx, 0
+        ; index
+        mov esi, 0
 
-    ; increment index and len
-    inc ecx
-    inc esi
-    
-    jmp loop
+        loop:
+        ; check for null terminator
+        cmp byte [ebx + esi], 0x00
+        jz end_strlen
 
-    end: ; print length
-    push ecx
-    push ebx
-    push fmtStr
-    call _printf
-    add esp, 0xC
+        ; increment index and len
+        inc ecx
+        inc esi
+        
+        jmp loop
 
-    pop ebp
-    ret
+        end_strlen: ; print length
+        mov eax, ecx
+        push eax
+
+        push ecx
+        push ebx
+        push fmtStr
+        call _printf
+        add esp, 0xC
+
+        pop eax
+        pop edx
+        pop ecx
+        pop ebx
+        pop ebp
+        ret
 
     _main:
 
