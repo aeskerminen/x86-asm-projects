@@ -35,6 +35,7 @@ section .text
     push ebx
     push fmtStr
     call _printf
+    add esp, 0xC
 
     pop ebp
     ret
