@@ -8,12 +8,11 @@ section .data
     fmtStr: db "The length of: %s is %d", 0xB, 0
 
 section .text
-    _main:
+    strlen:
+    push ebp
+    mov ebp, esp
 
-    ; read argv into memory
-    mov eax, [esp + 8]
-    ; read first argument
-    mov ebx, [eax + 1 * 4]
+    mov ebx, [esp + 8]
 
     ; len
     mov ecx, 0
@@ -36,5 +35,18 @@ section .text
     push ebx
     push fmtStr
     call _printf
+
+    pop ebp
+    ret
+
+    _main:
+
+    ; read argv into memory
+    mov eax, [esp + 8]
+    ; read first argument
+    mov ebx, [eax + 1 * 4]
+
+    push ebx
+    call strlen
     
     ret
