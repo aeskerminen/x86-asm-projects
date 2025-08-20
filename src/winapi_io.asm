@@ -53,7 +53,7 @@ section .text
     push ebp
     mov ebp, esp
 
-    ; store the handle in ebx and push to stack
+    ; store the handle in ebx
     mov ebx, [esp + 8]
 
     ; lpOverlapped
@@ -77,6 +77,25 @@ section .text
 
     pop ebp
     ret
+
+    _readFromTestFile:
+    push ebp
+    mov ebp, esp
+
+    ; store the handle in ebx
+    mov ebx, [esp + 8]
+
+    ; lpOverlapped
+    push 0
+
+    ; lpNumberOfBytesRead
+    push 0
+
+    ; nNumberOfBytesToRead
+    
+
+    pop ebp
+    ret 
     
     _main:
    
@@ -86,6 +105,14 @@ section .text
     ; write to file test.txt
     push eax ; handle
     call _writeToTestFile
+    add esp, 0x4
+
+    ; restore handle to file
+    mov eax, ebx
+
+    ; read the contents of the file
+    push eax ; handle
+    call _readFromTestFile
     add esp, 0x4
 
     ; restore handle to file
