@@ -86,18 +86,19 @@ section .text
     test eax, eax
     jz _fail
 
+    ; params for ShowWindow
+
+    push 0x1
+    push dword [hwndMain]
+
+    call _ShowWindow@8
+
     ; update window
 
     push dword [hwndMain]
     call _UpdateWindow@4
 
-    ; params for ShowWindow
-
-    push 0x1
-    push eax
-
-    call _ShowWindow@8
-
+  
     _fail:
     push failMsg
     call _printf
