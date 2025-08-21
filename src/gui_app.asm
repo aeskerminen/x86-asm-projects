@@ -12,6 +12,7 @@ extern _TranslateMessage@4
 extern _DispatchMessageA@4
 extern _LoadCursorA@8
 extern _GetLastError@0
+extern _LoadIconA@8
 
 extern _printf
 
@@ -22,7 +23,7 @@ section .bss
 
 section .data
     windowName: db "Assembly GUI", 0
-    className: db "Assembly window class", 0
+    className: db "Asddsembly class", 0
     failMsg: db "Program failed", 0
     errMsg: db "Error code: %d", 0xB, 0
 
@@ -33,8 +34,8 @@ section .data
         dd 0 ; cbWndExtra
         dd 0 ; hInstance
         dd 0 ; hIcon
-        dd 0 ; hCursor
-        dd 5 ; hbrBackground
+        dd 32512 ; hCursor
+        dd 6 ; hbrBackground
         dd 0 ; lpszMenuName
         dd className ; lpszClassName
 
@@ -61,16 +62,14 @@ section .text
     mov [hInstance], eax
     mov [wc + 16], eax ; hInstance into wc
 
+    lea eax, [WindowProc]
+    mov [wc + 4], eax
+
     ; params for registerclass
-
-    push 0
-    push 32512
-    call _LoadCursorA@8
-
-    mov [wc + 24], eax
 
     push wc
     call _RegisterClassA@4
+    mov ebx ,eax
 
     push eax
     push errMsg
@@ -96,9 +95,14 @@ section .text
     push 0 ; extended windows style
 
     call _CreateWindowExA@48 ; handle to window in EAX
-
     mov [hwndMain], eax ; store handle to window permanently
 
+    push eax
+    push errMsg
+    call _printf
+    add esp, 0x8
+
+    mov eax, [hwndMain]
     test eax, eax
     jz _fail
 
@@ -132,8 +136,9 @@ section .text
         push msg
         call _DispatchMessageA@4
 
-        jmp _msg_loop
   
+    jmp _end
+
     _fail:
     push failMsg
     call _printf
