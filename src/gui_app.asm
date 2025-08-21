@@ -6,13 +6,19 @@ extern _GetModuleHandleA@4
 extern _RegisterClassA@4
 extern _PostQuitMessage@4
 extern _DefWindowProcA@16
+extern _UpdateWindow@4
+
+extern _printf
 
 section .bss
     msg resb 28
+    hInstance resd 1
+    hwndMain resd 1
 
 section .data
     windowName: db "Assembly GUI", 0
     className: db "Assembly window class", 0
+    failMsg: db "Program failed", 0
 
     wc:
         dd 0 ; style
@@ -46,6 +52,7 @@ section .text
 
     push 0
     call _GetModuleHandleA@4 ; hInstance in EAX
+    mov [hInstance], eax
 
     ; params for registerclass
 
@@ -53,11 +60,14 @@ section .text
 
     push wc
     call _RegisterClassA@4
+    
+    test eax, eax
+    jz _fail
 
     ; params for createwindowex
 
     push 0 ; lpParam
-    push eax ; hInstance
+    push dword [hInstance] ; hInstance
     push 0 ; hMenu
     push 0 ; hWndParent
     push 500 ; height
@@ -71,12 +81,27 @@ section .text
 
     call _CreateWindowExA@48 ; handle to window in EAX
 
+    mov [hwndMain], eax ; store handle to window permanently
+
+    test eax, eax
+    jz _fail
+
+    ; update window
+
+    push dword [hwndMain]
+    call _UpdateWindow@4
+
     ; params for ShowWindow
 
     push 0x1
     push eax
 
     call _ShowWindow@8
+
+    _fail:
+    push failMsg
+    call _printf
+    jmp end
 
     end:
     ret
