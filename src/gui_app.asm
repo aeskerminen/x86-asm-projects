@@ -7,6 +7,11 @@ extern _RegisterClassA@4
 extern _PostQuitMessage@4
 extern _DefWindowProcA@16
 extern _UpdateWindow@4
+extern _GetMessageA@16
+extern _TranslateMessage@4
+extern _DispatchMessageA@4
+extern _LoadCursorA@8
+extern _GetLastError@0
 
 extern _printf
 
@@ -19,6 +24,7 @@ section .data
     windowName: db "Assembly GUI", 0
     className: db "Assembly window class", 0
     failMsg: db "Program failed", 0
+    errMsg: db "Error code: %d", 0xB, 0
 
     wc:
         dd 0 ; style
@@ -28,7 +34,7 @@ section .data
         dd 0 ; hInstance
         dd 0 ; hIcon
         dd 0 ; hCursor
-        dd 0 ; hbrBackground
+        dd 5 ; hbrBackground
         dd 0 ; lpszMenuName
         dd className ; lpszClassName
 
@@ -40,27 +46,37 @@ section .text
         call _PostQuitMessage@4
         xor eax, eax
         ret 16                      ; stdcall: clean 4 args
+        .def:
+            push dword [esp+20]         ; lParam
+            push dword [esp+16]         ; wParam
+            push dword [esp+12]         ; Msg
+            push dword [esp+4]          ; hwnd
+            call _DefWindowProcA@16
+            ret 16
 
-    .def:
-        push dword [esp+20]         ; lParam
-        push dword [esp+16]         ; wParam
-        push dword [esp+12]         ; Msg
-        push dword [esp+4]          ; hwnd
-        call _DefWindowProcA@16
-        ret 16
     _main:
 
     push 0
     call _GetModuleHandleA@4 ; hInstance in EAX
     mov [hInstance], eax
+    mov [wc + 16], eax ; hInstance into wc
 
     ; params for registerclass
 
-    mov [wc + 16], eax ; hInstance into wc
+    push 0
+    push 32512
+    call _LoadCursorA@8
+
+    mov [wc + 24], eax
 
     push wc
     call _RegisterClassA@4
-    
+
+    push eax
+    push errMsg
+    call _printf
+    add esp, 0x8
+
     test eax, eax
     jz _fail
 
@@ -98,11 +114,30 @@ section .text
     push dword [hwndMain]
     call _UpdateWindow@4
 
+    ; message loop for handling events
+
+    _msg_loop:
+        push 0
+        push 0
+        push 0
+        push msg
+        call _GetMessageA@16
+
+        test eax, eax
+        jz _end
+
+        push msg
+        call _TranslateMessage@4
+
+        push msg
+        call _DispatchMessageA@4
+
+        jmp _msg_loop
   
     _fail:
     push failMsg
     call _printf
-    jmp end
+    jmp _end
 
-    end:
+    _end:
     ret
