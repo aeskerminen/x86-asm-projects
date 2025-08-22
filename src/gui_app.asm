@@ -42,17 +42,20 @@ section .data
     failMsg: db "Program failed", 0
     errMsg: db "Error code: %d", 0xB, 0
 
-    wc:
-        dd 0 ; style
+    wc: ; WndClassEX
+        dd 48 ; cbSize
+        dd CS_HREDRAW | CS_VREDRAW | CS_BYTEALIGNWINDOW ; style
         dd WindowProc ; lpfnWndProc
-        dd 0 ; cbClsExtra
-        dd 0 ; cbWndExtra
+        dd NULL; cbClsExtra
+        dd NULL; cbWndExtra
         dd 0 ; hInstance
         dd 0 ; hIcon
-        dd 32512 ; hCursor
-        dd 6 ; hbrBackground
+        dd 0 ; hCursor
+        dd COLOR_WINDOW + 1 ; hbrBackground
         dd 0 ; lpszMenuName
         dd className ; lpszClassName
+        dd 0 ; hIconSm
+       
 
 section .text
     WindowProc:
@@ -89,34 +92,21 @@ section .text
 
     _main:
 
+    ; Get hInstance
     push NULL
-    call _GetModuleHandleA@4 ; hInstance in EAX
-    mov [hInstance], eax
+    call _GetModuleHandleA@4 
+    mov [wc + 20], eax
+
+    ; Set up stack frame for storing local variables (32 bytes)
     
-    ; EXAMPLE CODE
-
-    push  EBP                                      ; Set up a stack frame
+    push  EBP                                      
     mov   EBP, ESP
-    sub   ESP, 80                                  ; Space for 80 bytes of local variables
-
-    %define wc                 EBP - 80             ; WNDCLASSEX structure. 48 bytes
-    %define wc.cbSize          EBP - 80
-    %define wc.style           EBP - 76
-    %define wc.lpfnWndProc     EBP - 72
-    %define wc.cbClsExtra      EBP - 68
-    %define wc.cbWndExtra      EBP - 64
-    %define wc.hInstance       EBP - 60
-    %define wc.hIcon           EBP - 56
-    %define wc.hCursor         EBP - 52
-    %define wc.hbrBackground   EBP - 48
-    %define wc.lpszMenuName    EBP - 44
-    %define wc.lpszClassName   EBP - 40
-    %define wc.hIconSm         EBP - 36
+    sub   ESP, 32                                  
 
     %define msg                EBP - 32             ; MSG structure. 28 bytes
-    %define msg.hwnd           EBP - 32             ; Breaking out each member is not necessary
-    %define msg.message        EBP - 28             ; in this case, but it shows where each
-    %define msg.wParam         EBP - 24             ; member is on the stack
+    %define msg.hwnd           EBP - 32             
+    %define msg.message        EBP - 28             
+    %define msg.wParam         EBP - 24            
     %define msg.lParam         EBP - 20
     %define msg.time           EBP - 16
     %define msg.pt.x           EBP - 12
@@ -124,50 +114,40 @@ section .text
 
     %define hWnd               EBP - 4
 
-    mov   dword [wc.cbSize], 48                    ; [EBP - 80]
-    mov   dword [wc.style], CS_HREDRAW | CS_VREDRAW | CS_BYTEALIGNWINDOW  ; [EBP - 76]
-    mov   dword [wc.lpfnWndProc], WindowProc          ; [EBP - 72]
-    mov   dword [wc.cbClsExtra], NULL              ; [EBP - 68]
-    mov   dword [wc.cbWndExtra], NULL              ; [EBP - 64]
-    mov   EAX, dword [hInstance]                   ; Global
-    mov   dword [wc.hInstance], EAX                ; [EBP - 60]
-
+    ; Application icon to wc
     push  LR_SHARED
     push  NULL
     push  NULL
     push  IMAGE_ICON
     push  IDI_APPLICATION
     push  NULL
-    call  _LoadImageA@24                           ; Large program icon
-    mov   dword [wc.hIcon], EAX                    ; [EBP - 56]
+    call  _LoadImageA@24                           
+    mov   dword [wc + 24], EAX                  
 
+    ; Application cursor to wc
     push  LR_SHARED
     push  NULL
     push  NULL
     push  IMAGE_CURSOR
     push  IDC_ARROW
     push  NULL
-    call  _LoadImageA@24                           ; Cursor
-    mov   dword [wc.hCursor], EAX                  ; [EBP - 52]
+    call  _LoadImageA@24                          
+    mov   dword [wc + 28], EAX
 
-    mov   dword [wc.hbrBackground], COLOR_WINDOW + 1  ; [EBP - 48]
-    mov   dword [wc.lpszMenuName], NULL            ; [EBP - 44]
-    mov   dword [wc.lpszClassName], className      ; [EBP - 40]
-
+    ; Application small icon to wc
     push  LR_SHARED
     push  NULL
     push  NULL
     push  IMAGE_ICON
     push  IDI_APPLICATION
     push  NULL
-    call  _LoadImageA@24                           ; Small program icon
-    mov   dword [wc.hIconSm], EAX                  ; [EBP - 36]
+    call  _LoadImageA@24                           
+    mov   dword [wc + 44], eax                 
 
-    lea   EAX, [wc]                                ; [EBP - 80]
-    push  EAX
+    ; Load wc to eax and push to stack for registerclass
+    lea   eax, [wc]                               
+    push  eax
     call  _RegisterClassExA@4
-
-    ; EXAMPLE CODE
 
     ; params for createwindowex
 
