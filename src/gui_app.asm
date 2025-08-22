@@ -88,7 +88,7 @@ section .data
     failMsg: db "Program failed", 0
     errMsg: db "Error code: %d", 0xB, 0
     StaticClass: db "STATIC", 0
-    Text1: db "Hello, world!", 0
+    Text1: db "GerbUIngo!", 0
 
     wc: ; WndClassEX
         dd 48 ; cbSize
@@ -146,7 +146,7 @@ section .text
         push  20                                       ; Height
         push  400                                      ; Width
         push  10                                       ; Y
-        push  120                                      ; X
+        push  40                                      ; X
         push  WS_CHILD | WS_VISIBLE | SS_NOTIFY | SS_CENTER
         push  Text1                                    ; Default text
         push  StaticClass
