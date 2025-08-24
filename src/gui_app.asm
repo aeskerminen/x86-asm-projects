@@ -81,6 +81,7 @@ extern _BeginPaint@8
 extern _EndPaint@8
 extern _Rectangle@20
 extern _Ellipse@20
+extern _Arc@36
 extern _printf
 
 section .bss
@@ -191,12 +192,47 @@ section .text
         mov dword [hdc], eax
 
         ; Paint shit
-        push 100 ; b
-        push 100 ; r
-        push 0   ; t
-        push 0   ; l
+
+        ; head
+        push 360 ; b
+        push 360 ; r
+        push 120   ; t
+        push 120   ; l
         push dword [hdc]
         call _Ellipse@20
+
+        ; left eye
+        push 210 ; b
+        push 210 ; r
+        push 170   ; t
+        push 170   ; l
+        push dword [hdc]
+        call _Ellipse@20
+
+        ; right eye
+        push 210 ; b
+        push 310 ; r
+        push 170   ; t
+        push 270   ; l
+        push dword [hdc]
+        call _Ellipse@20
+
+        ; mouth (smile)
+
+        push 250 ; y4 
+        push 320 ; x4
+
+        push 250 ; y3
+        push 120 ; x3
+
+        push 320 ; y2 BOUNDING BOX DOWNRIGHT
+        push 310 ; x2
+
+        push 250 ; y1 BOUNDING BOX UPLEFT
+        push 170 ; x1
+        
+        push dword[hdc]
+        call _Arc@36
 
         ; End paint 
         lea eax, dword [ps]
@@ -205,8 +241,6 @@ section .text
         call _EndPaint@8
 
         jmp _WM_PROCESSED
-
-
 
         _WM_PROCESSED:
         xor   EAX, EAX                                 ; WM_DESTROY has been processed, return 0
