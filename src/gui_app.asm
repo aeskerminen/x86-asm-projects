@@ -1,6 +1,7 @@
 global _main
-                                                ; Basic Window, 32 bit. V1.01
-COLOR_WINDOW        EQU 5                       ; Constants
+
+; Constants   
+COLOR_WINDOW        EQU 5                       
 CS_BYTEALIGNWINDOW  EQU 2000h
 CS_HREDRAW          EQU 2
 CS_VREDRAW          EQU 1
@@ -76,6 +77,9 @@ extern _GetLastError@0
 extern _LoadIconA@8
 extern _LoadImageA@24
 extern _IsDialogMessageA@8
+extern _BeginPaint@8
+extern _EndPaint@8
+extern _Rectangle@20
 
 extern _printf
 
@@ -109,17 +113,38 @@ section .text
     WindowProc:
         push  EBP                                      ; Set up a Stack frame
         mov   EBP, ESP
+        sub ESP, 68
 
         %define hWnd    EBP + 8                         ; Location of the 4 passed parameters from
         %define uMsg    EBP + 12                        ; the calling function
         %define wParam  EBP + 16                        ; We can now access these parameters by name
         %define lParam  EBP + 20
 
-        cmp   dword [uMsg], WM_DESTROY                 ; [EBP + 12]
-        je    WMDESTROY
+        ; PAINSTRUCT struct 
+
+        %define ps                  EBP - 68            
+        %define ps.hdc              EBP - 68
+        %define ps.fErase           EBP - 64
+        %define ps.rcPaint.left     EBP - 60
+        %define ps.rcPaint.top      EBP - 56
+        %define ps.rcPaint.right    EBP - 52
+        %define ps.rcPaint.bottom   EBP - 48
+        %define ps.Restore          EBP - 44
+        %define ps.fIncUpdate       EBP - 40
+        %define ps.rgbReserved      EBP - 36 ; 32 bytes array
+
+        ; display device context handle
+
+        %define hdc                 EBP - 4
+
+        cmp dword [uMsg], WM_DESTROY                 ; [EBP + 12]
+        je WMDESTROY
 
         cmp dword [uMsg], WM_CREATE
         je WMCREATE
+
+        cmp dword [uMsg], WM_PAINT
+        je WMPAINT
 
         DefaultMessage:
         push  dword [lParam]                           ; [EBP + 20]
@@ -155,6 +180,33 @@ section .text
         mov   dword [Static1], EAX
         jmp _WM_PROCESSED
 
+        WMPAINT:
+
+        ; Begin paint
+        lea eax, dword [ps]
+        push eax
+        push dword [hWnd]
+        call _BeginPaint@8
+
+        mov dword [hdc], eax
+
+        ; Paint shit
+        push 100 ; b
+        push 100 ; r
+        push 0   ; t
+        push 0   ; l
+        push dword [hdc]
+        call _Rectangle@20
+
+        ; End paint 
+        lea eax, dword [ps]
+        push eax
+        push dword [hWnd]
+        call _EndPaint@8
+
+        jmp _WM_PROCESSED
+
+
 
         _WM_PROCESSED:
         xor   EAX, EAX                                 ; WM_DESTROY has been processed, return 0
@@ -175,7 +227,9 @@ section .text
     mov   EBP, ESP
     sub   ESP, 32                                  
 
-    %define msg                EBP - 32             ; MSG structure. 28 bytes
+    ; MSG structure
+
+    %define msg                EBP - 32             
     %define msg.hwnd           EBP - 32             
     %define msg.message        EBP - 28             
     %define msg.wParam         EBP - 24            

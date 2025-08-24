@@ -2,7 +2,6 @@ global _main
 
 extern _printf
 extern _atoi
-extern MessageBoxA
 
 section .bss
 
@@ -90,8 +89,6 @@ section .text
 
     ; Convert to int
 
-    push edi ; save EDI to stack (callee-save register)
-
     push ebx
     call _atoi
     mov ebx, eax
@@ -102,7 +99,6 @@ section .text
     mov esi, eax
     add esp, 0x4
 
-    mov edi, [esp] ; get EDI from stack 
     mov al, byte [edi] ; move first byte of the value that edi points to, to al.
 
     ; check operator
@@ -113,7 +109,7 @@ section .text
     push ebx
     push esi
     call add_two
-    add esp, 0x8
+    add esp, 0xC
     mov ebx, eax
     mov eax, [esp]
     jmp print_res
@@ -125,7 +121,7 @@ section .text
     push ebx
     push esi
     call sub_two
-    add esp, 0x8
+    add esp, 0xC
     mov ebx, eax
     mov eax, [esp]
     jmp print_res
@@ -137,7 +133,7 @@ section .text
     push ebx
     push esi
     call mul_two
-    add esp, 0x8
+    add esp, 0xC
     mov ebx, eax
     mov eax, [esp]
     jmp print_res
@@ -159,8 +155,8 @@ section .text
     error:
     push errorString
     call _printf
-
-    ret
+    jmp _end
+    
 
     print_res:
     ; Print the result
@@ -170,4 +166,5 @@ section .text
     call _printf
     add esp, 0x8
 
+    _end:
     ret
