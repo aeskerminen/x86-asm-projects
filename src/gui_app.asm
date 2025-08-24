@@ -80,7 +80,7 @@ extern _IsDialogMessageA@8
 extern _BeginPaint@8
 extern _EndPaint@8
 extern _Rectangle@20
-
+extern _Ellipse@20
 extern _printf
 
 section .bss
@@ -196,7 +196,7 @@ section .text
         push 0   ; t
         push 0   ; l
         push dword [hdc]
-        call _Rectangle@20
+        call _Ellipse@20
 
         ; End paint 
         lea eax, dword [ps]
