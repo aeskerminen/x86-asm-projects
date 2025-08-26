@@ -104,12 +104,12 @@ section .text
 
     sub esp, 24 ; space for 6 local variables
 
-    %define opcode [ebp - 4]
-    %define x [ebp - 8]
-    %define y [ebp - 12]
-    %define nnn [ebp - 16]
-    %define nn [ebp - 20]
-    %define n [ebp - 24]
+    %define opcode ebp - 4
+    %define x ebp - 8
+    %define y ebp - 12
+    %define nnn ebp - 16
+    %define nn ebp - 20
+    %define n ebp - 24
 
     ; print entry text
     push entryText
