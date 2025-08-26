@@ -17,7 +17,7 @@ section .bss
 section .data
     entryText: db "Chip-8 parser written in x86 assembly.", 0xB, 0
     readMode: db "rb", 0
-    failText: db "failed", 0xB, 0
+    failText: db "%d", 0xB, 0
 
 section .text
     ; readSourceFile(char* SOURCE_URL)
@@ -39,44 +39,46 @@ section .text
     add esp, 0x8
     mov [filePointer], eax
 
-    test eax, eax
-    jnz next
-
-    push failText
-    call _printf
-    add esp, 0x4
-
-
-    next:
     ; get file size
-    push 2
-    push 0
-    push filePointer
-    add esp, 0xC
+    push 0x2
+    push 0x0
+    mov eax, [filePointer]
+    push eax
     call _fseek
+    add esp, 0xC
 
-    push filePointer
+    mov eax, [filePointer]
+    push eax
     call _ftell
     add esp, 0x4
     mov [fileSize], eax
-
-    push filePointer
+    
+    mov eax, [filePointer]
+    push eax
     call _rewind
     add esp, 0x4
 
     ; allocate space on the heap for buffer
-    push fileSize
+    push fileSize + 1
     call _malloc
     add esp, 0x4
     mov [fileBuffer], eax
 
     ; read source into buffer
-    push filePointer
-    push fileSize
+    mov eax, [filePointer]
+    push eax
+    mov eax, [fileSize]
+    push eax
     push 1
-    push fileBuffer
+    mov eax, [fileBuffer]
+    push eax
     call _fread
     add esp, 0x10
+
+    ; null terminator
+    mov eax, [fileSize]
+    add eax, [fileBuffer]
+    mov [eax], byte 0
 
     ; close file
     push filePointer
@@ -109,7 +111,8 @@ section .text
     add esp, 0x4
 
     ; print the buffer
-    push fileBuffer
+    mov eax, [fileBuffer]
+    push eax
     call _printf
     add esp, 0x4
 
