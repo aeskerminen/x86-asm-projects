@@ -78,19 +78,20 @@ section .text
     ; null terminator
     mov eax, [fileSize]
     add eax, [fileBuffer]
-    mov [eax], byte 0
+    mov [eax], byte 0x00
 
     ; close file
-    push filePointer
+    mov eax, [filePointer]
+    push eax
     call _fclose
     add esp, 0x4
-
-    mov esp, ebp
 
     pop edx
     pop ecx
     pop eax
     pop ebp
+
+    xor eax, eax
 
     ret
 
@@ -108,12 +109,6 @@ section .text
     ; read source to buffer
     push ebx
     call readSourceFile
-    add esp, 0x4
-
-    ; print the buffer
-    mov eax, [fileBuffer]
-    push eax
-    call _printf
     add esp, 0x4
 
     ret
