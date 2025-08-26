@@ -254,6 +254,7 @@ section .text
     push NULL
     call _GetModuleHandleA@4 
     mov [wc + 20], eax
+    mov [hInstance], eax
 
     ; Set up stack frame for storing local variables (32 bytes)
     
@@ -351,12 +352,12 @@ section .text
     cmp   EAX, 0
     je    _end
 
-    lea   EAX, [msg]                               ; [EBP - 32]
-    push  EAX
-    push  dword [hWnd]                             ; [EBP - 4]
-    call  _IsDialogMessageA@8                      ; For keyboard strokes
-    cmp   EAX, 0
-    jne   .MessageLoop                             ; Skip TranslateMessage and DispatchMessage
+    ;lea   EAX, [msg]                               ; [EBP - 32]
+    ;push  EAX
+    ;push  dword [hWnd]                             ; [EBP - 4]
+    ;call  _IsDialogMessageA@8                      ; For keyboard strokes
+    ;cmp   EAX, 0
+    ;jne   .MessageLoop                             ; Skip TranslateMessage and DispatchMessage
 
     lea   EAX, [msg]                               ; [EBP - 32]
     push  EAX
@@ -364,7 +365,6 @@ section .text
 
     lea   EAX, [msg]                               ; [EBP - 32]
     push  EAX
-
     call  _DispatchMessageA@4
     jmp   .MessageLoop
 
