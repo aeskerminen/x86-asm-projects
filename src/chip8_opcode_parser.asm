@@ -86,16 +86,30 @@ section .text
     call _fclose
     add esp, 0x4
 
+    ; restore registers
     pop edx
     pop ecx
     pop eax
     pop ebp
 
+    ; clear EAX, 0 as in successfull
     xor eax, eax
 
     ret
 
     _main:
+
+    push ebp
+    mov ebp, esp
+
+    sub esp, 24 ; space for 6 local variables
+
+    %define opcode [ebp - 4]
+    %define x [ebp - 8]
+    %define y [ebp - 12]
+    %define nnn [ebp - 16]
+    %define nn [ebp - 20]
+    %define n [ebp - 24]
 
     ; print entry text
     push entryText
@@ -110,6 +124,25 @@ section .text
     push ebx
     call readSourceFile
     add esp, 0x4
+
+    ; opcode retrieval loop
+
+    mov esi, 0
+    mov edi, fileSize
+
+    main_loop:
+    cmp esi, edi
+    jz end
+
+
+
+
+    add esi, 0x2
+    jmp main_loop
+
+    end:
+    mov esp, ebp
+    pop ebp
 
     ret
 
