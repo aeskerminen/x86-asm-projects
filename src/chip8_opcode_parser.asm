@@ -41,7 +41,7 @@ section .data
     andStr: db "and V%d, V%d", 0xB, 0
     xorStr: db "xor V%d, V%d", 0xB, 0
     addvStr: db "addv V%d, V%d", 0xB, 0
-    subStr: db "subv V%d, V%d", 0xB, 0
+    subvStr: db "subv V%d, V%d", 0xB, 0
     shrStr: db "shr V%d, 1", 0xB, 0
     shlStr: db "shl V%d, 1", 0xB, 0
     subnStr: db "subn V%d, V%d", 0xB, 0
@@ -252,7 +252,8 @@ section .text
             jnz jump_two
 
             ; goto instruction
-            push nnn
+            mov ecx, [nnn]
+            push ecx
             push gotoStr
             call _printf
             add esp, 0x8
@@ -263,7 +264,8 @@ section .text
             jnz jump_three
 
             ; call instruction
-            push nnn
+            mov ecx, [nnn]
+            push ecx
             push callStr
             call _printf
             add esp, 0x8
@@ -274,7 +276,8 @@ section .text
             jnz jump_four
 
             ; se instruction
-            push nn
+            mov ecx, [nn]
+            push ecx
             mov ecx, [x]
             push ecx
             push seStr
@@ -287,7 +290,8 @@ section .text
             jnz jump_five
 
             ; sne instruction
-            push nn
+            mov ecx, [nn]
+            push ecx
             mov ecx, [x]
             push ecx
             push sneStr
@@ -300,7 +304,8 @@ section .text
             jnz jump_six
             
             ; sev instruction
-            push nn
+            mov ecx, [nn]
+            push ecx
             mov ecx, [x]
             push ecx
             push sevStr
@@ -313,7 +318,8 @@ section .text
             jnz jump_seven
 
             ; ldi instruction
-            push nn
+            mov ecx, [nn]
+            push ecx
             mov ecx, [x]
             push ecx
             push ldiStr
@@ -326,7 +332,8 @@ section .text
             jnz jump_eight
 
             ; add instruction
-            push nn
+            mov ecx, [nn]
+            push ecx
             mov ecx, [x]
             push ecx
             push addStr
@@ -491,7 +498,8 @@ section .text
             jnz jump_b
 
             ; ldi16 instruction
-            push nnn
+            mov ecx, [nnn]
+            push ecx
             push ldi16Str
             call _printf
             add esp, 0x8
@@ -502,7 +510,8 @@ section .text
             jnz jump_c
 
             ; jpv0 instruction
-            push nnn
+            mov ecx, [nnn]
+            push ecx
             push jpv0Str
             call _printf
             add esp, 0x8
@@ -525,7 +534,8 @@ section .text
             jnz jump_e
 
             ; drw instruction
-            push n
+            mov ecx, [n]
+            push ecx
             mov ecx, [y]
             push ecx
             mov ecx, [x]
