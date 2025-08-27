@@ -19,6 +19,7 @@ section .data
     readMode: db "rb", 0
     failText: db "%d", 0xB, 0
     opcodeText: db "%04X", 0xB, 0
+    undefinedOpcode: db "Undefined opcode", 0xB, 0
 
 section .text
     ; readSourceFile(char* SOURCE_URL)
@@ -178,11 +179,28 @@ section .text
             ; handle different opcodes
 
             ; compare first byte
-            mov eax, opcode
+            mov eax, [opcode]
             and eax, 0xF000
 
             cmp eax, 0x0000
             jnz jump_one
+
+                ; compare last byte
+                mov ebx, [opcode]
+                and ebx, 0x000F
+
+                cmp ebx, 0x0000
+                jnz jump_one_one
+
+                jump_one_one:
+                cmp ebx, 0x000E
+                jnz jump_one_default
+
+                jump_one_default:
+                push undefinedOpcode
+                call _printf
+                add esp, 0x4
+                jmp jump_switch_end
 
             jump_one:
             cmp eax, 0x1000
@@ -216,10 +234,150 @@ section .text
             cmp eax, 0x8000
             jnz jump_nine
 
+                ; compare last byte
+                mov ebx, [opcode]
+                and ebx, 0x000F
+
+                cmp ebx, 0x0000
+                jnz jump_eight_one
+
+                jump_eight_one:
+                cmp ebx, 0x0001
+                jnz jump_eight_two
+
+                jump_eight_two:
+                cmp ebx, 0x0002
+                jnz jump_eight_three
+
+                jump_eight_three:
+
+                cmp ebx, 0x0003
+                jnz jump_eight_four
+
+                jump_eight_four:
+
+                cmp ebx, 0x0004
+                jnz jump_eight_five
+
+                jump_eight_five:
+
+                cmp ebx, 0x0005
+                jnz jump_eight_six
+
+                jump_eight_six:
+
+                cmp ebx, 0x0006
+                jnz jump_eight_seven
+
+                jump_eight_seven:
+
+                cmp ebx, 0x0007
+                jnz jump_eight_e
+
+                jump_eight_e:
+                cmp ebx, 0x000E
+                jnz jump_eight_default
+
+                jump_eight_default:
+                push undefinedOpcode
+                call _printf
+                add esp, 0x4
+                jmp jump_switch_end
+            
             jump_nine:
             cmp eax, 0x9000
+            jnz jump_a
 
+            jump_a:
+            cmp eax, 0xA000
+            jnz jump_b
 
+            jump_b:
+            cmp eax, 0xB000
+            jnz jump_c
+
+            jump_c:
+            cmp eax, 0xC000
+            jnz jump_d
+
+            jump_d:
+            cmp eax, 0xD000
+            jnz jump_e
+
+            jump_e:
+            cmp eax, 0xE000
+            jnz jump_f
+
+                ; compare nn
+                mov ebx, [nn]
+
+                cmp ebx, 0x009E
+                jnz jump_e_one
+
+                jump_e_one:
+                cmp ebx, 0x00A1
+                jnz jump_e_default
+
+                jump_e_default:
+                push undefinedOpcode
+                call _printf
+                add esp, 0x4
+                jmp jump_switch_end
+
+            jump_f:
+            cmp eax, 0xF000
+            jnz jump_switch_end
+
+                ; compare nn
+                mov ebx, [nn]
+
+                cmp ebx, 0x0007
+                jnz jump_f_one
+
+                jump_f_one:
+                cmp ebx, 0x000A
+                jnz jump_f_two
+
+                jump_f_two:
+                cmp ebx, 0x0015
+                jnz jump_f_three
+
+                jump_f_three:
+
+                cmp ebx, 0x0018
+                jnz jump_f_four
+
+                jump_f_four:
+
+                cmp ebx, 0x001E
+                jnz jump_f_five
+
+                jump_f_five:
+
+                cmp ebx, 0x0029
+                jnz jump_f_six
+
+                jump_f_six:
+
+                cmp ebx, 0x0033
+                jnz jump_f_seven
+
+                jump_f_seven:
+
+                cmp ebx, 0x0055
+                jnz jump_f_e
+
+                jump_f_e:
+                cmp ebx, 0x0065
+                jnz jump_f_default
+
+                jump_f_default:
+                push undefinedOpcode
+                call _printf
+                add esp, 0x4
+                jmp jump_switch_end
+
+            jump_switch_end:
             ; increment ESI and continue
             add esi, 0x2
         jmp main_loop
