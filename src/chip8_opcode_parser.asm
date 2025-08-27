@@ -148,6 +148,78 @@ section .text
             call _printf
             add esp, 0x8
 
+            ; X
+            mov eax, [opcode]
+            and eax, 0x0F00
+            shr eax, 8
+            mov [x], eax
+
+            ; Y
+            mov eax, [opcode]
+            and eax, 0x00F0
+            shr eax, 4
+            mov [y], eax
+            
+            ; NNN
+            mov eax, [opcode]
+            and eax, 0x0FFF
+            mov [nnn], eax
+
+            ; NN
+            mov eax, [opcode]
+            and eax, 0x00FF
+            mov [nn], eax
+
+            ; N
+            mov eax, [opcode]
+            and eax, 0x000F
+            mov [n], eax
+
+            ; handle different opcodes
+
+            ; compare first byte
+            mov eax, opcode
+            and eax, 0xF000
+
+            cmp eax, 0x0000
+            jnz jump_one
+
+            jump_one:
+            cmp eax, 0x1000
+            jnz jump_two
+
+            jump_two:
+            cmp eax, 0x2000
+            jnz jump_three
+
+            jump_three:
+            cmp eax, 0x3000
+            jnz jump_four
+
+            jump_four:
+            cmp eax, 0x4000
+            jnz jump_five
+
+            jump_five:
+            cmp eax, 0x5000
+            jnz jump_six
+
+            jump_six:
+            cmp eax, 0x6000
+            jnz jump_seven
+
+            jump_seven:
+            cmp eax, 0x7000
+            jnz jump_eight
+
+            jump_eight:
+            cmp eax, 0x8000
+            jnz jump_nine
+
+            jump_nine:
+            cmp eax, 0x9000
+
+
             ; increment ESI and continue
             add esi, 0x2
         jmp main_loop
