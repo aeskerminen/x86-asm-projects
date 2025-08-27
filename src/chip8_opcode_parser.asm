@@ -10,6 +10,12 @@ extern _rewind
 extern _fread
 extern _fclose
 
+%macro print 1
+    push dword %1
+    call _printf
+    add esp, 04X
+%endmacro
+
 section .bss
     filePointer: resd 1
     fileSize: resd 1
@@ -95,9 +101,7 @@ section .text
         mov ebp, esp
 
         ; print entry text
-        push entryText
-        call _printf
-        add esp, 0x4
+        print entryText
 
         ; retrieve arguments
         mov eax, [ebp + 12] ; argv
@@ -197,9 +201,7 @@ section .text
                 jnz jump_one_default
 
                 jump_one_default:
-                push undefinedOpcode
-                call _printf
-                add esp, 0x4
+                print undefinedOpcode
                 jmp jump_switch_end
 
             jump_one:
@@ -279,9 +281,7 @@ section .text
                 jnz jump_eight_default
 
                 jump_eight_default:
-                push undefinedOpcode
-                call _printf
-                add esp, 0x4
+                print undefinedOpcode
                 jmp jump_switch_end
             
             jump_nine:
@@ -319,9 +319,7 @@ section .text
                 jnz jump_e_default
 
                 jump_e_default:
-                push undefinedOpcode
-                call _printf
-                add esp, 0x4
+                print undefinedOpcode
                 jmp jump_switch_end
 
             jump_f:
@@ -372,9 +370,7 @@ section .text
                 jnz jump_f_default
 
                 jump_f_default:
-                push undefinedOpcode
-                call _printf
-                add esp, 0x4
+                print undefinedOpcode
                 jmp jump_switch_end
 
             jump_switch_end:
@@ -387,4 +383,3 @@ section .text
         pop ebp
 
     ret
-
