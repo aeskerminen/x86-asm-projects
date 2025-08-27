@@ -608,7 +608,7 @@ section .text
                 push ecx
                 push lddtStr
                 call _printf
-                add esp 0x8
+                add esp, 0x8
                 jmp jump_switch_end
 
                 jump_f_three:
@@ -621,7 +621,7 @@ section .text
                 push ecx
                 push ldstStr
                 call _printf
-                add esp 0x8
+                add esp, 0x8
                 jmp jump_switch_end
 
                 jump_f_four:
