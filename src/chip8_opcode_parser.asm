@@ -124,22 +124,23 @@ section .text
     %define n ebp - 24
 
     mov esi, 0
-    mov edi, fileSize
+    mov edi, [fileSize]
 
     main_loop:
     cmp esi, edi
     jz end
 
     ; get high and low bytes
-    movzx ebx, [fileBuffer+esi] ; h
+    mov eax, [fileBuffer]
+
+    movzx ebx, byte [eax+esi] ; h
     shl ebx, 0x8
-    movzx ecx, [fileBuffer+esi+1] ; l
+    movzx ecx, byte [eax+esi+1] ; l
     or ebx, ecx
 
     mov [opcode], ebx
 
-    mov eax, [opcode]
-    push eax
+    push ebx
     push opcodeText
     call _printf
     add esp, 0x8
