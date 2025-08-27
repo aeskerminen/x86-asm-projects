@@ -131,9 +131,9 @@ section .text
     jz end
 
     ; get high and low bytes
-    movzx ebx, byte [fileBuffer+esi] ; h
+    movzx ebx, [fileBuffer+esi] ; h
     shl ebx, 0x8
-    movzx ecx, byte [fileBuffer+esi+1] ; l
+    movzx ecx, [fileBuffer+esi+1] ; l
     or ebx, ecx
 
     mov [opcode], ebx
