@@ -18,17 +18,13 @@ section .data
     entryText: db "Chip-8 parser written in x86 assembly.", 0xB, 0
     readMode: db "rb", 0
     failText: db "%d", 0xB, 0
+    opcodeText: db "%04X", 0xB, 0
 
 section .text
     ; readSourceFile(char* SOURCE_URL)
     readSourceFile:
     push ebp
     mov ebp, esp
-
-    ; save registers
-    push eax
-    push ecx
-    push edx
 
     mov eax, [ebp + 8] ; move SOURCE_URL to EAX
 
@@ -59,7 +55,9 @@ section .text
     add esp, 0x4
 
     ; allocate space on the heap for buffer
-    push fileSize + 1
+    mov eax, [fileSize]
+    inc eax
+    push eax
     call _malloc
     add esp, 0x4
     mov [fileBuffer], eax
@@ -86,14 +84,8 @@ section .text
     call _fclose
     add esp, 0x4
 
-    ; restore registers
-    pop edx
-    pop ecx
-    pop eax
+    mov esp, ebp
     pop ebp
-
-    ; clear EAX, 0 as in successfull
-    xor eax, eax
 
     ret
 
@@ -101,6 +93,26 @@ section .text
 
     push ebp
     mov ebp, esp
+
+    ; print entry text
+    push entryText
+    call _printf
+    add esp, 0x4
+
+    ; retrieve arguments
+    mov eax, [ebp + 12] ; argv
+    mov ebx, [eax + 4] ; 1st argument, which is the source file
+
+    ; read source to buffer
+    push ebx
+    call readSourceFile
+    add esp, 0x4
+
+    ; opcode retrieval loop
+
+    push entryText
+    call _printf
+    add esp, 0x4
 
     sub esp, 24 ; space for 6 local variables
 
@@ -111,22 +123,6 @@ section .text
     %define nn ebp - 20
     %define n ebp - 24
 
-    ; print entry text
-    push entryText
-    call _printf
-    add esp, 0x4
-
-    ; retrieve arguments
-    mov eax, [esp + 8] ; argv
-    mov ebx, [eax + 4] ; 1st argument, which is the source file
-
-    ; read source to buffer
-    push ebx
-    call readSourceFile
-    add esp, 0x4
-
-    ; opcode retrieval loop
-
     mov esi, 0
     mov edi, fileSize
 
@@ -134,8 +130,19 @@ section .text
     cmp esi, edi
     jz end
 
+    ; get high and low bytes
+    movzx ebx, byte [fileBuffer+esi] ; h
+    shl ebx, 0x8
+    movzx ecx, byte [fileBuffer+esi+1] ; l
+    or ebx, ecx
 
+    mov [opcode], ebx
 
+    mov eax, [opcode]
+    push eax
+    push opcodeText
+    call _printf
+    add esp, 0x8
 
     add esi, 0x2
     jmp main_loop
