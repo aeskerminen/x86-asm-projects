@@ -123,6 +123,7 @@ section .text
     %define nn ebp - 20
     %define n ebp - 24
 
+    ; for loop variables
     mov esi, 0
     mov edi, [fileSize]
 
@@ -130,21 +131,25 @@ section .text
     cmp esi, edi
     jz end
 
-    ; get high and low bytes
+    ; get the array
     mov eax, [fileBuffer]
 
+    ; read two bytes from the array and combine them
     movzx ebx, byte [eax+esi] ; h
     shl ebx, 0x8
     movzx ecx, byte [eax+esi+1] ; l
     or ebx, ecx
 
+    ; store the opcode
     mov [opcode], ebx
 
+    ; print the opcode
     push ebx
     push opcodeText
     call _printf
     add esp, 0x8
 
+    ; increment ESI and continue
     add esi, 0x2
     jmp main_loop
 
