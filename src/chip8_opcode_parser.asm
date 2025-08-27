@@ -182,12 +182,6 @@ section .text
             ; store the opcode
             mov [opcode], ebx
 
-            ; print the opcode
-            push ebx
-            push opcodeText
-            call _printf
-            add esp, 0x8
-
             ; X
             mov eax, [opcode]
             and eax, 0x0F00
