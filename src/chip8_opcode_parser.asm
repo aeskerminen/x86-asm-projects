@@ -23,139 +23,138 @@ section .data
 section .text
     ; readSourceFile(char* SOURCE_URL)
     readSourceFile:
-    push ebp
-    mov ebp, esp
+        push ebp
+        mov ebp, esp
 
-    mov eax, [ebp + 8] ; move SOURCE_URL to EAX
+        mov eax, [ebp + 8] ; move SOURCE_URL to EAX
 
-    ; open stream
-    push readMode
-    push eax
-    call _fopen 
-    add esp, 0x8
-    mov [filePointer], eax
+        ; open stream
+        push readMode
+        push eax
+        call _fopen 
+        add esp, 0x8
+        mov [filePointer], eax
 
-    ; get file size
-    push 0x2
-    push 0x0
-    mov eax, [filePointer]
-    push eax
-    call _fseek
-    add esp, 0xC
+        ; get file size
+        push 0x2
+        push 0x0
+        mov eax, [filePointer]
+        push eax
+        call _fseek
+        add esp, 0xC
 
-    mov eax, [filePointer]
-    push eax
-    call _ftell
-    add esp, 0x4
-    mov [fileSize], eax
-    
-    mov eax, [filePointer]
-    push eax
-    call _rewind
-    add esp, 0x4
+        mov eax, [filePointer]
+        push eax
+        call _ftell
+        add esp, 0x4
+        mov [fileSize], eax
+        
+        mov eax, [filePointer]
+        push eax
+        call _rewind
+        add esp, 0x4
 
-    ; allocate space on the heap for buffer
-    mov eax, [fileSize]
-    inc eax
-    push eax
-    call _malloc
-    add esp, 0x4
-    mov [fileBuffer], eax
+        ; allocate space on the heap for buffer
+        mov eax, [fileSize]
+        inc eax
+        push eax
+        call _malloc
+        add esp, 0x4
+        mov [fileBuffer], eax
 
-    ; read source into buffer
-    mov eax, [filePointer]
-    push eax
-    mov eax, [fileSize]
-    push eax
-    push 1
-    mov eax, [fileBuffer]
-    push eax
-    call _fread
-    add esp, 0x10
+        ; read source into buffer
+        mov eax, [filePointer]
+        push eax
+        mov eax, [fileSize]
+        push eax
+        push 1
+        mov eax, [fileBuffer]
+        push eax
+        call _fread
+        add esp, 0x10
 
-    ; null terminator
-    mov eax, [fileSize]
-    add eax, [fileBuffer]
-    mov [eax], byte 0x00
+        ; null terminator
+        mov eax, [fileSize]
+        add eax, [fileBuffer]
+        mov [eax], byte 0x00
 
-    ; close file
-    mov eax, [filePointer]
-    push eax
-    call _fclose
-    add esp, 0x4
+        ; close file
+        mov eax, [filePointer]
+        push eax
+        call _fclose
+        add esp, 0x4
 
-    mov esp, ebp
-    pop ebp
+        mov esp, ebp
+        pop ebp
 
     ret
 
     _main:
+        push ebp
+        mov ebp, esp
 
-    push ebp
-    mov ebp, esp
+        ; print entry text
+        push entryText
+        call _printf
+        add esp, 0x4
 
-    ; print entry text
-    push entryText
-    call _printf
-    add esp, 0x4
+        ; retrieve arguments
+        mov eax, [ebp + 12] ; argv
+        mov ebx, [eax + 4] ; 1st argument, which is the source file
 
-    ; retrieve arguments
-    mov eax, [ebp + 12] ; argv
-    mov ebx, [eax + 4] ; 1st argument, which is the source file
+        ; read source to buffer
+        push ebx
+        call readSourceFile
+        add esp, 0x4
 
-    ; read source to buffer
-    push ebx
-    call readSourceFile
-    add esp, 0x4
+        ; opcode retrieval loop
 
-    ; opcode retrieval loop
+        push entryText
+        call _printf
+        add esp, 0x4
 
-    push entryText
-    call _printf
-    add esp, 0x4
+        sub esp, 24 ; space for 6 local variables
 
-    sub esp, 24 ; space for 6 local variables
+        %define opcode ebp - 4
+        %define x ebp - 8
+        %define y ebp - 12
+        %define nnn ebp - 16
+        %define nn ebp - 20
+        %define n ebp - 24
 
-    %define opcode ebp - 4
-    %define x ebp - 8
-    %define y ebp - 12
-    %define nnn ebp - 16
-    %define nn ebp - 20
-    %define n ebp - 24
+        ; for loop variables
+        mov esi, 0
+        mov edi, [fileSize]
 
-    ; for loop variables
-    mov esi, 0
-    mov edi, [fileSize]
+        main_loop:
+            cmp esi, edi
+            jz end
 
-    main_loop:
-    cmp esi, edi
-    jz end
+            ; get the array
+            mov eax, [fileBuffer]
 
-    ; get the array
-    mov eax, [fileBuffer]
+            ; read two bytes from the array and combine them
+            movzx ebx, byte [eax+esi] ; h
+            shl ebx, 0x8
+            movzx ecx, byte [eax+esi+1] ; l
+            or ebx, ecx
 
-    ; read two bytes from the array and combine them
-    movzx ebx, byte [eax+esi] ; h
-    shl ebx, 0x8
-    movzx ecx, byte [eax+esi+1] ; l
-    or ebx, ecx
+            ; store the opcode
+            mov [opcode], ebx
 
-    ; store the opcode
-    mov [opcode], ebx
+            ; print the opcode
+            push ebx
+            push opcodeText
+            call _printf
+            add esp, 0x8
 
-    ; print the opcode
-    push ebx
-    push opcodeText
-    call _printf
-    add esp, 0x8
+            ; increment ESI and continue
+            add esi, 0x2
+        jmp main_loop
 
-    ; increment ESI and continue
-    add esi, 0x2
-    jmp main_loop
-
-    end:
-    mov esp, ebp
-    pop ebp
+        end:
+        mov esp, ebp
+        pop ebp
 
     ret
 
