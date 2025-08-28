@@ -61,7 +61,7 @@ section .data
     bcdStr: db "bcd V%d", 0xB, 0
     storStr: db "stor", 0xB, 0
     loadStr: db "load", 0xB, 0
-    rawStr: db "Raw: %#04x", 0xB, 0
+    rawStr: db "raw: %#04x", 0xB, 0
 
 section .text
     ; readSourceFile(char* SOURCE_URL)
@@ -239,7 +239,11 @@ section .text
                 jmp jump_switch_end
 
                 jump_one_default:
-                print undefinedOpcode
+                mov ecx, [opcode]
+                push ecx
+                push rawStr
+                call _printf
+                add esp, 0x8
                 jmp jump_switch_end
 
             jump_one:
@@ -471,7 +475,11 @@ section .text
                 jmp jump_switch_end
 
                 jump_eight_default:
-                print undefinedOpcode
+                mov ecx, [opcode]
+                push ecx
+                push rawStr
+                call _printf
+                add esp, 0x8
                 jmp jump_switch_end
             
             jump_nine:
@@ -571,7 +579,11 @@ section .text
                 jmp jump_switch_end
 
                 jump_e_default:
-                print undefinedOpcode
+                mov ecx, [opcode]
+                push ecx
+                push rawStr
+                call _printf
+                add esp, 0x8
                 jmp jump_switch_end
 
             jump_f:
@@ -686,7 +698,11 @@ section .text
                 jmp jump_switch_end
 
                 jump_f_default:
-                print undefinedOpcode
+                mov ecx, [opcode]
+                push ecx
+                push rawStr
+                call _printf
+                add esp, 0x8
                 jmp jump_switch_end
 
             jump_switch_end:
