@@ -13,7 +13,7 @@ extern _fclose
 %macro print 1
     push dword %1
     call _printf
-    add esp, 04X
+    add esp, 0x4
 %endmacro
 
 section .bss
@@ -24,18 +24,18 @@ section .data
     entryText: db "Chip-8 parser written in x86 assembly.", 0xB, 0
     readMode: db "rb", 0
     failText: db "%d", 0xB, 0
-    opcodeText: db "%04X", 0xB, 0
+    opcodeText: db "%#04x", 0xB, 0
     undefinedOpcode: db "Undefined opcode", 0xB, 0
 
     clearStr: db "cls", 0xB, 0
     retStr: db "ret", 0xB, 0
-    gotoStr: db "jmp %04X", 0xB, 0
-    callStr: db "call %04X", 0xB, 0
-    seStr: db "se V%d, %04X", 0xB, 0
-    sneStr: db "sne V%d, %04X", 0xB, 0
-    sevStr: db "sev V%d, %04X", 0xB, 0
-    ldiStr: db "ldi V%d, %04X", 0xB, 0
-    addStr: db "add V%d, %04X", 0xB, 0
+    gotoStr: db "jmp %#04x", 0xB, 0
+    callStr: db "call %#04x", 0xB, 0
+    seStr: db "se V%d, %#04x", 0xB, 0
+    sneStr: db "sne V%d, %#04x", 0xB, 0
+    sevStr: db "sev V%d, %#04x", 0xB, 0
+    ldiStr: db "ldi V%d, %#04x", 0xB, 0
+    addStr: db "add V%d, %#04x", 0xB, 0
     movStr: db "mov V%d, V%d", 0xB, 0
     orStr: db "or V%d, V%d", 0xB, 0
     andStr: db "and V%d, V%d", 0xB, 0
@@ -46,10 +46,10 @@ section .data
     shlStr: db "shl V%d, 1", 0xB, 0
     subnStr: db "subn V%d, V%d", 0xB, 0
     snevStr: db "snev V%d, V%d", 0xB, 0
-    ldi16Str: db "ldi16 %04X", 0xB, 0
-    jpv0Str: db "jpv0 %04X", 0xB, 0
+    ldi16Str: db "ldi16 %#04x", 0xB, 0
+    jpv0Str: db "jpv0 %#04x", 0xB, 0
     rndStr: db "rnd V%d", 0xB, 0
-    drwStr: db "drw V%d V%d %04X", 0xB, 0
+    drwStr: db "drw V%d V%d %#04x", 0xB, 0
     skpStr: db "skp V%d", 0xB, 0
     sknpStr: db "sknp V%d", 0xB, 0
     lddtStr: db "lddt V%d", 0xB, 0
@@ -61,6 +61,7 @@ section .data
     bcdStr: db "bcd V%d", 0xB, 0
     storStr: db "stor", 0xB, 0
     loadStr: db "load", 0xB, 0
+    rawStr: db "Raw: %#04x", 0xB, 0
 
 section .text
     ; readSourceFile(char* SOURCE_URL)
