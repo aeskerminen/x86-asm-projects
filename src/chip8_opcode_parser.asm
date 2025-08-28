@@ -21,47 +21,47 @@ section .bss
     fileSize: resd 1
     fileBuffer: resd 1
 section .data
-    entryText: db "Chip-8 parser written in x86 assembly.", 0xB, 0
+    entryText: db "Chip-8 parser written in x86 assembly.", 0xA, 0
     readMode: db "rb", 0
-    failText: db "%d", 0xB, 0
-    opcodeText: db "%#04x", 0xB, 0
-    undefinedOpcode: db "Undefined opcode", 0xB, 0
+    failText: db "%d", 0xA, 0
+    opcodeText: db "%#04x", 0xA, 0
+    undefinedOpcode: db "Undefined opcode", 0xA, 0
 
-    clearStr: db "cls", 0xB, 0
-    retStr: db "ret", 0xB, 0
-    gotoStr: db "jmp %#04x", 0xB, 0
-    callStr: db "call %#04x", 0xB, 0
-    seStr: db "se V%d, %#04x", 0xB, 0
-    sneStr: db "sne V%d, %#04x", 0xB, 0
-    sevStr: db "sev V%d, %#04x", 0xB, 0
-    ldiStr: db "ldi V%d, %#04x", 0xB, 0
-    addStr: db "add V%d, %#04x", 0xB, 0
-    movStr: db "mov V%d, V%d", 0xB, 0
-    orStr: db "or V%d, V%d", 0xB, 0
-    andStr: db "and V%d, V%d", 0xB, 0
-    xorStr: db "xor V%d, V%d", 0xB, 0
-    addvStr: db "addv V%d, V%d", 0xB, 0
-    subvStr: db "subv V%d, V%d", 0xB, 0
-    shrStr: db "shr V%d, 1", 0xB, 0
-    shlStr: db "shl V%d, 1", 0xB, 0
-    subnStr: db "subn V%d, V%d", 0xB, 0
-    snevStr: db "snev V%d, V%d", 0xB, 0
-    ldi16Str: db "ldi16 %#04x", 0xB, 0
-    jpv0Str: db "jpv0 %#04x", 0xB, 0
-    rndStr: db "rnd V%d", 0xB, 0
-    drwStr: db "drw V%d V%d %#04x", 0xB, 0
-    skpStr: db "skp V%d", 0xB, 0
-    sknpStr: db "sknp V%d", 0xB, 0
-    lddtStr: db "lddt V%d", 0xB, 0
-    ldvtStr: db "ldv V%d", 0xB, 0
-    ldkStr: db "ldk V%d", 0xB, 0
-    ldstStr: db "ldst V%d", 0xB, 0
-    addiStr: db "addi V%d", 0xB, 0
-    ldfStr: db "ldf V%d", 0xB, 0
-    bcdStr: db "bcd V%d", 0xB, 0
-    storStr: db "stor", 0xB, 0
-    loadStr: db "load", 0xB, 0
-    rawStr: db "raw: %#04x", 0xB, 0
+    clearStr: db "cls", 0xA, 0
+    retStr: db "ret", 0xA, 0
+    gotoStr: db "jmp %#04x", 0xA, 0
+    callStr: db "call %#04x", 0xA, 0
+    seStr: db "se V%d, %#04x", 0xA, 0
+    sneStr: db "sne V%d, %#04x", 0xA, 0
+    sevStr: db "sev V%d, %#04x", 0xA, 0
+    ldiStr: db "ldi V%d, %#04x", 0xA, 0
+    addStr: db "add V%d, %#04x", 0xA, 0
+    movStr: db "mov V%d, V%d", 0xA, 0
+    orStr: db "or V%d, V%d", 0xA, 0
+    andStr: db "and V%d, V%d", 0xA, 0
+    xorStr: db "xor V%d, V%d", 0xA, 0
+    addvStr: db "addv V%d, V%d", 0xA, 0
+    subvStr: db "subv V%d, V%d", 0xA, 0
+    shrStr: db "shr V%d, 1", 0xA, 0
+    shlStr: db "shl V%d, 1", 0xA, 0
+    subnStr: db "subn V%d, V%d", 0xA, 0
+    snevStr: db "snev V%d, V%d", 0xA, 0
+    ldi16Str: db "ldi16 %#04x", 0xA, 0
+    jpv0Str: db "jpv0 %#04x", 0xA, 0
+    rndStr: db "rnd V%d", 0xA, 0
+    drwStr: db "drw V%d V%d %#04x", 0xA, 0
+    skpStr: db "skp V%d", 0xA, 0
+    sknpStr: db "sknp V%d", 0xA, 0
+    lddtStr: db "lddt V%d", 0xA, 0
+    ldvtStr: db "ldv V%d", 0xA, 0
+    ldkStr: db "ldk V%d", 0xA, 0
+    ldstStr: db "ldst V%d", 0xA, 0
+    addiStr: db "addi V%d", 0xA, 0
+    ldfStr: db "ldf V%d", 0xA, 0
+    bcdStr: db "bcd V%d", 0xA, 0
+    storStr: db "stor", 0xA, 0
+    loadStr: db "load", 0xA, 0
+    rawStr: db "raw: %#04x", 0xA, 0
 
 section .text
     ; readSourceFile(char* SOURCE_URL)
